@@ -53,7 +53,7 @@ Use these emoji for task/checklist items in all documentation files. They make s
 - ❌ ~~Configure Redis~~ (not needed until v2)
 ```
 
-**Where this applies:** All files under `docs/`. Story files (`stories/`) and quick-dev specs (`specs/`) use `[ ]`/`[x]` GitHub checkboxes instead — those render as interactive checkboxes in GitHub issues and PRs.
+**Where this applies:** All files under `docs/`. Story files (`docs/epics/`) and quick-dev specs (`docs/specs/`) use `[ ]`/`[x]` GitHub checkboxes instead — those render as interactive checkboxes in GitHub issues and PRs.
 
 ---
 

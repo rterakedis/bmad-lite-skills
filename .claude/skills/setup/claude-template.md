@@ -17,8 +17,8 @@ Planning and reference docs live in `docs/`. See `AGENTS.md` for the full map.
 | `docs/setup/` | Local dev setup, scripts, resources |
 | `docs/maintainer/` | Operational runbooks |
 | `docs/sql/` | Schema, migrations |
-| `stories/` | Story files (`{epic}-{story}-{slug}.md`) |
-| `specs/` | Quick-dev specs |
+| `docs/epics/` | Story files (`{epic}-{story}-{slug}.md`) |
+| `docs/specs/` | Quick-dev specs |
 | `docs/investigations/` | Investigation case files from `/investigate` |
 
 Skills live in `skills/`. See `skills/README.md` for the full flywheel.
