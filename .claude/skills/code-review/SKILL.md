@@ -61,6 +61,14 @@ Merge duplicates. Drop `dismiss`. If zero remain: clean review.
 
 **Pull deferred forward:** If any `[ ] [Defer]`, execute **RESOLVE** from `skills/deferred/skill.md`.
 
+**Update epic context:** Before updating status, check for discoveries made during review or fix application that future stories/epics should know about. Look for:
+- Constraints or invariants uncovered while fixing bugs
+- Schema, API, or integration details that differed from assumptions
+- Patterns established or broken during patches
+- Any "we learned X the hard way" that isn't obvious from the code
+
+If a story file was loaded, identify its epic (e.g., `epic-2` from `epic-2-story-3.md`). Check whether `docs/epics/epic-<n>-context.md` exists. If discoveries exist, append them under a `## Story {id} Learnings` heading. If no discoveries worth capturing, skip silently.
+
 **Update status:**
 - All resolved: Status `done` → **CLOSE-ISSUE**
 - Unresolved patches: Status `in-progress` → **TRANSITION**
