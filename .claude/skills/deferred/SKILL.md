@@ -18,7 +18,8 @@ Append-only single source of truth. Format:
 ```markdown
 | ID | Title | Detail | Source | Scheduled As | Date |
 |----|-------|--------|--------|--------------|------|
-| D-1 | {title} | {issue} | `{file}` | Story {epic}.{N} | {date} |
+| D-1 | {title} | {issue} | `{file}` | Story {epic}.{N} (slotted as AC) | {date} |
+| D-2 | {title} | {issue} | `{file}` | Story {epic}.{N} (new remediation) | {date} |
 ```
 
 ---
@@ -30,23 +31,23 @@ Called by: dev-story/code-review/correct-course/investigate/quick-dev when triag
 
 Steps:
 1. Get next ID from last row of `docs/deferred-items.md` (or D-1 if new).
-2. Call **SCHEDULE** to add story to `docs/epics.md`.
-3. Append row to `docs/deferred-items.md`.
+2. Call **SCHEDULE** (which tries **SLOT-INTO-BACKLOG** first, falls back to new remediation story).
+3. Append row to `docs/deferred-items.md`, noting "slotted as AC" or "new remediation" in Scheduled As.
 4. In source file, mark `[x] [Defer]` with D-ID + story number.
 
-Return: D-ID and story assigned.
+Return: D-ID and story assigned (with slot/new distinction).
 
 ---
 
 ## SCHEDULE
 
-Input: `title`, `detail`, `source`, optionally `target_epic`.
+Input: `title`, `detail`, `source`, `d_id`, optionally `target_epic`.
 
-Semantic epic matching: place issue in epic whose scope naturally contains this work (security→auth epic, UI→UI epic, perf→perf epic, etc.).
+**Step 1 — try SLOT-INTO-BACKLOG first.** If a suitable not-started story exists, inject there instead of creating a new one. Return early if slotted.
 
-If no match: append to last incomplete epic (or create Epic R: Remediation if all complete).
+**Step 2 — fallback: new remediation story.** Semantic epic matching: place in the epic whose scope naturally contains this work (security→auth epic, UI→UI epic, perf→perf epic, etc.). If no match: append to last incomplete epic (or create Epic R: Remediation if all complete).
 
-Entry format (append to epic's stories):
+New story entry format (append to epic's stories):
 ```markdown
 ### Story {epic}.{N}: {title} *(remediation)*
 **Origin:** D-{ID} — deferred from `{source}`
@@ -56,7 +57,27 @@ Entry format (append to epic's stories):
 
 Update epic story count. Execute **ENSURE-MILESTONE** + **CREATE-ISSUE** (skip if unavailable).
 
-Return: story number and epic.
+Return: story number and epic, and whether slotted or new.
+
+---
+
+## SLOT-INTO-BACKLOG
+
+Input: `title`, `detail`, `source`, `d_id`.
+
+Find the best existing backlog story to absorb the deferred item as an AC:
+
+1. Read `docs/epics.md`. Collect all stories with `Status: not started`.
+2. Score each candidate: +2 if the story's epic/title domain matches the finding (security, UI, perf, data, auth, etc.); +1 if the story is in the next unstarted epic; 0 otherwise. Pick the highest-scoring candidate. If tie, prefer the earliest story number.
+3. If a candidate with score ≥ 1 exists:
+   - Open the story file (if it exists) or the epics entry.
+   - Append under its `## Acceptance Criteria` section (or add the section if absent):
+     ```markdown
+     - [ ] [D-{d_id}] {title}: {detail} *(slotted from deferred — origin: `{source}`)*
+     ```
+   - If the story has a GitHub issue open, add a comment: "Deferred item D-{d_id} slotted as AC: {title}"
+   - Return: slotted into Story {epic}.{N} — SCHEDULE skips Step 2.
+4. If no candidate scores ≥ 1: return "no slot found" → SCHEDULE continues to Step 2.
 
 ---
 

@@ -59,7 +59,7 @@ Merge duplicates. Drop `dismiss`. If zero remain: clean review.
 
 **Auto-patch:** Apply immediately, mark `[x]`. If can't auto-apply, leave `[ ]`.
 
-**Pull deferred forward:** If any `[ ] [Defer]`, execute **RESOLVE** from `skills/deferred/skill.md`.
+**Pull deferred forward:** If any `[ ] [Defer]`, execute **LOG-AND-SCHEDULE** from `skills/deferred/skill.md` for each deferred item (title = finding title, detail = finding detail, source = file:line).
 
 **Update epic context:** Before updating status, check for discoveries made during review or fix application that future stories/epics should know about. Look for:
 - Constraints or invariants uncovered while fixing bugs

@@ -195,4 +195,4 @@ Reported inline as described in Phase 2. Flywheel does not auto-resume.
 - The flywheel does not commit. You own the commit gate between stories.
 - GitHub tracking is handled by the sub-skills (create-story, dev-story, code-review) — flywheel does not call tracking ops directly.
 - If GitHub is unavailable, flywheel falls back to `docs/epics.md` Status fields for all story discovery.
-- Deferred items are logged by the sub-skills; the flywheel surfaces them in the checkpoint but does not schedule them (that is already done by `skills/deferred/skill.md`).
+- Deferred items are logged and scheduled by `skills/deferred/SKILL.md` (called via code-review). SCHEDULE tries SLOT-INTO-BACKLOG first — injecting the item as an AC on the best matching not-started backlog story — and only creates a new remediation story if no suitable slot exists. The flywheel surfaces deferred items in the Phase 4 checkpoint with their D-ID and the story they were slotted into or created as.
