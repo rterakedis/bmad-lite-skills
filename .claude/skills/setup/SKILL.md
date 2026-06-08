@@ -34,9 +34,10 @@ Also check for explicit invocation: `/setup migrate` or `/setup clean`.
 
 ## Scaffold Flow
 
-Ask two questions (can be combined into one prompt):
+Ask these questions (can be combined into one prompt):
 1. "Project name + one-sentence description?" (store as {project_name}, {project_description})
 2. "Where is your bmad-lite-skills directory?" (store as {skills_path}, e.g. `~/repos/bmad-lite-skills`). If already present in `.claude/settings.json`, skip this question.
+3. "Is this an iOS, iPadOS, or macOS app built with SwiftUI?" (yes/no — store as {is_apple_platform})
 
 ### Step 1 — Scaffold Docs
 
@@ -61,6 +62,12 @@ Write to root using template. If exists, append missing sections (never replace)
 
 If not exists: create from template.
 If exists: check for `## Docs Structure` + `## Task Tracking Emoji`. Add missing sections at top (after project desc). Don't modify existing.
+
+### Step 3a — Append Apple Platform Patterns (conditional)
+
+If {is_apple_platform} is yes:
+- Check whether `## Modern SwiftUI Patterns` already exists in CLAUDE.md. If it does, skip (never duplicate).
+- Otherwise, append the full contents of `{skills_path}/.claude/skills/setup/stubs/modern-swiftui.md` to CLAUDE.md, preceded by a `---` separator.
 
 ### Step 4 — Wire up auto-loading hook
 
