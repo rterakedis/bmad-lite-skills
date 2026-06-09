@@ -1,11 +1,11 @@
 ---
-name: refresh-swiftui
-description: Research current Swift/SwiftUI best practices from gold-standard sources and update the docs/setup/swift/ reference files and the modern-swiftui.md guardrails stub. Use when the user says "refresh swiftui", "update swift guidance", or "refresh swift best practices".
+name: refresh-swift
+description: Research current Swift/SwiftUI/platform best practices from gold-standard sources and update the docs/setup/swift/ reference files and the modern-swiftui.md guardrails stub. Use when the user says "refresh swift", "update swift guidance", "refresh swift best practices", or "refresh swiftui".
 ---
 
-# Refresh SwiftUI Best Practices Skill
+# Refresh Swift Best Practices Skill
 
-**Goal:** Research the current state of Swift/SwiftUI best practices from primary sources and update the sectioned reference docs in `docs/setup/swift/` plus the `modern-swiftui.md` guardrails stub in the skills repo. These files are baked into every new iOS project — keeping them current is critical for guiding correct architectural choices.
+**Goal:** Research the current state of Swift language, SwiftUI, concurrency, testing, and platform-specific patterns from primary sources and update the sectioned reference docs in `docs/setup/swift/` plus the `modern-swiftui.md` guardrails stub in the skills repo. These files are baked into every new Apple platform project — keeping them current is critical for guiding correct architectural choices.
 
 **Scope:** iOS 18 through the current stable release only. **Hard exclude** any pre-release, beta, or unannounced OS API. When in doubt, omit.
 
@@ -127,7 +127,17 @@ The guardrails file must stay under ~50 lines — it lives in CLAUDE.md and is l
 
 Summarize:
 
-1. **What changed:** Bullet list per file — new patterns added, outdated patterns removed, iOS version bumps.
+1. **What changed:** Bullet list per file — new patterns added, outdated patterns removed, iOS/Swift version bumps.
 2. **What stayed the same:** Brief confirmation that still-valid content was preserved.
 3. **Sources consulted:** Which gold-standard sources had relevant current content.
 4. **Reminder:** Existing projects that already have the sectioned files in `docs/setup/swift/` will have their copies updated by this run. Projects that haven't run `/setup` yet will get the updated stubs when they do.
+
+---
+
+## Step 5 — Offer Audit Handoff
+
+After reporting, ask:
+
+> "Guidance updated. Run `/swift-audit` now to check the current codebase against the new patterns? (y/n)"
+
+If yes: invoke `/swift-audit` immediately. If no: stop.

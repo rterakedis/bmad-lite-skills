@@ -80,8 +80,11 @@ Also uses `gh api` with `--jq` for more precise issue filtering within a milesto
 
 ---
 
-### `refresh-swiftui`
-New skill with no upstream equivalent. Researches current Swift/SwiftUI best practices from gold-standard sources (Hacking with Swift, Swift with Majid, SwiftLee, Apple WWDC docs, Point-Free) and updates both the project's `docs/setup/swift/` sectioned reference docs and the skills repo stubs. Triggered via `/refresh-swiftui`. Scope is iOS 18 through current stable release — hard-excludes pre-release APIs.
+### `refresh-swift`
+New skill with no upstream equivalent. Researches current Swift/SwiftUI best practices from gold-standard sources (Hacking with Swift, Swift with Majid, SwiftLee, Apple WWDC docs, Point-Free) and updates both the project's `docs/setup/swift/` sectioned reference docs and the skills repo stubs. Triggered via `/refresh-swift`. Scope is iOS 18 through current stable release — hard-excludes pre-release APIs. After updating guidance, offers to chain into `/swift-audit`.
+
+### `swift-audit`
+New skill with no upstream equivalent. Audits planning docs (`architecture.md`, `prd.md`, `epics.md`), story files, and Swift source code against the guidance in `docs/setup/swift/`. Produces a single remediation story file at `docs/epics/swift-audit-{date}.md` with one AC per finding, ready for `/dev-story`. Triggered via `/swift-audit`. Requires `docs/setup/swift/` to exist.
 
 ---
 
