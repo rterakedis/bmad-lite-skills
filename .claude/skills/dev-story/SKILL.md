@@ -14,8 +14,17 @@ description: Implement a story from its story file. Use when the user says "dev 
 1. Identify story: user path or first `Status: ready-for-dev` in `docs/epics/`. Stop if not found.
 2. Read story file completely.
 3. Read CLAUDE.md if exists (may override Dev Notes).
-4. Execute **TRANSITION** with `new_label: in-progress` (skip if unavailable).
-5. Confirm: "Implementing {epic}.{story}: {title}. Starting..."
+4. **If `docs/setup/swift/` exists** (Apple platform project): read the files relevant to this story's tasks before implementing:
+   - Any story touching data models, services, or `@Observable`: read `docs/setup/swift/state-management.md`
+   - Any story touching async loading, background work, or threading: read `docs/setup/swift/concurrency.md`
+   - Any story adding new features, services, or project structure: read `docs/setup/swift/architecture.md`
+   - Any story adding views or UI components: read `docs/setup/swift/ui-composition.md`
+   - Any story adding tests: read `docs/setup/swift/testing.md`
+   - Always read `docs/setup/swift/anti-patterns.md` if present — it governs what must not be written
+   - If `docs/setup/swift/ipados-specific.md` exists and the story touches navigation, split view, drag-and-drop, pointer, keyboard, or multi-window: read it
+   - If `docs/setup/swift/macos-specific.md` exists and the story touches menus, windows, toolbar, settings, tables, or file operations: read it
+5. Execute **TRANSITION** with `new_label: in-progress` (skip if unavailable).
+6. Confirm: "Implementing {epic}.{story}: {title}. Starting..."
 
 ## Execution
 

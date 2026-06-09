@@ -34,6 +34,9 @@ When pulling upstream changes, copy content into `SKILL.md` (preserving uppercas
 
 These skills have intentional divergence from upstream. Preserve these when syncing.
 
+### `setup`
+Scaffold question 3 changed from a yes/no Apple platform question to a multi-select: "Which Apple platform(s)? (iOS / iPadOS / macOS / none)". Step 3b copies the 6 shared Swift stubs unconditionally when any Apple platform is selected, then adds `ipados-specific.md` if iPadOS is selected and `macos-specific.md` if macOS is selected. Step 3a appends the guardrails block to CLAUDE.md (checks for `## Swift/SwiftUI Guardrails`, not the old `## Modern SwiftUI Patterns` heading).
+
 ### `check-readiness`
 Added **Check 7** (cross-epic runtime dependency analysis) and **Check 8** (testing targets derived from architecture, with codification into `CLAUDE.md`). These checks are not in upstream.
 
@@ -74,6 +77,11 @@ Also added a two-pass deferred item audit:
 Epic discovery sorts by **epic number embedded in milestone title** (e.g., `"Epic 3 — ..."` → 3), not by GitHub milestone ID. This is intentional: GitHub assigns milestone IDs in creation order, which doesn't reflect intended epic sequence. Upstream sorts by milestone ID.
 
 Also uses `gh api` with `--jq` for more precise issue filtering within a milestone (rather than `gh issue list` piped to `first`).
+
+---
+
+### `refresh-swiftui`
+New skill with no upstream equivalent. Researches current Swift/SwiftUI best practices from gold-standard sources (Hacking with Swift, Swift with Majid, SwiftLee, Apple WWDC docs, Point-Free) and updates both the project's `docs/setup/swift/` sectioned reference docs and the skills repo stubs. Triggered via `/refresh-swiftui`. Scope is iOS 18 through current stable release — hard-excludes pre-release APIs.
 
 ---
 

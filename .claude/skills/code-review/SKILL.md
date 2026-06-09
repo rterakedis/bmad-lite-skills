@@ -23,6 +23,7 @@ If empty diff: stop. If >3000 lines: warn, offer to chunk by file.
 
 - If story file identified: read fully.
 - Read CLAUDE.md if exists.
+- **If `docs/setup/swift/` exists** (Apple platform project): read `docs/setup/swift/anti-patterns.md` and `docs/setup/swift/state-management.md` before beginning passes — use them as the rejection criteria for Pass A and Pass C. Also read `docs/setup/swift/ipados-specific.md` if present and the diff touches navigation, split view, or multi-window code; read `docs/setup/swift/macos-specific.md` if present and the diff touches menus, windows, settings, or toolbar code.
 - Confirm: "Reviewing {N} files, {+/-lines}. Story context: {yes/no}."
 
 ## Step 3 — Four Review Passes
