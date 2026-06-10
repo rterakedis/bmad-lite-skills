@@ -78,6 +78,8 @@ Epic discovery sorts by **epic number embedded in milestone title** (e.g., `"Epi
 
 Also uses `gh api` with `--jq` for more precise issue filtering within a milestone (rather than `gh issue list` piped to `first`).
 
+Phase 4 checkpoint includes a **TESTING PLAN** section (between DEFERRED ITEMS and UNRESOLVED ITEMS): concrete manual steps derived from the story's ACs and changed code — tap/click paths, API calls, edge cases. Writes "none — no user-visible surface changed." for pure refactors or migrations.
+
 ---
 
 ### `refresh-swift`

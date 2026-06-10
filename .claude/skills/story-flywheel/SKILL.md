@@ -96,6 +96,9 @@ PATCHES APPLIED
 DEFERRED ITEMS
 {list each [Defer] item with its D-ID and scheduled story — "none" if clean}
 
+TESTING PLAN
+{derive from the story's ACs and changed code: list concrete manual steps the developer should perform before committing — e.g. tap/click paths through UI, API calls to exercise, edge cases to verify, data states to set up. If nothing user-visible changed (pure refactor, migration, test-only), write "none — no user-visible surface changed."}
+
 UNRESOLVED ITEMS (action required before committing)
 {list any [ ] findings that could not be auto-patched — empty means none}
 
