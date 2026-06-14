@@ -43,6 +43,8 @@ For each task in order:
 
 Don't ask for clarification (use Dev Notes; log ambiguous calls in Completion Notes).
 
+**Keep files maintainable as you go.** If a file you create or touch crosses the file-size / decomposition target in the routed guidance (`docs/setup/swift/ui-composition.md` or `docs/setup/web/`), decompose it **as part of the task** — don't defer it. Split along responsibility seams (Swift: `extension TypeName {}` files for members, named `private struct` sub-views for layout), never by mechanical line-cutting, and never by giving a sub-view its own data access. A 280-line file with one cohesive job is fine; a smaller file doing three jobs is not — cohesion decides the cut.
+
 After major task groups, suggest `/compact` if context heavy. Don't block; continue.
 
 ## HALT Conditions

@@ -65,6 +65,7 @@ Richer task-tracking instructions:
 - Explicit direction to check off `[ ]` → `[x]` on Tasks/Subtasks AND Acceptance Criteria during implementation (not after).
 - Explicit direction to check off Architecture Compliance Checklist items (if present in Dev Notes) before marking done.
 - `Don't modify` list expanded to include Dev Notes prose and References (upstream is more terse).
+- **File decomposition enforcement**: Execution instructs proactive decomposition of any touched file that crosses the size/decomposition target in routed guidance (`docs/setup/swift/ui-composition.md` or `docs/setup/web/`), split along responsibility seams (not mechanical line-cutting); a matching DoD checklist item gates it at review. The Swift targets and the two techniques (`extension`-across-files for members, named `private struct` sub-views for layout) plus the sub-view-vs-ViewModel boundary live in `stubs/swift/ui-composition.md` (File-Level Decomposition) and `stubs/swift/anti-patterns.md` (#12 God Views & Data-Owning Sub-Views).
 
 Guidance routing and design loop (not in upstream):
 - Activation step 4 reads relevant `docs/setup/swift/` files by story topic; step 4b does the same for `docs/setup/web/` (css-design-system / accessibility-seo / astro / hugo / anti-patterns); step 4c makes the story's `### Design Contract` the design source of truth (falls back to reading `docs/ux/` only when a UI story lacks one, and logs the gap).

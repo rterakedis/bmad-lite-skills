@@ -45,6 +45,67 @@ private struct ExpandableOrderRow: View {
 
 ---
 
+## File-Level Decomposition — Targets & Techniques
+
+The 50-line body rule keeps one `body` readable; this rule keeps the whole *file* maintainable for humans **and AI agents**. An agent editing one button in a 600-line sheet must load and reason over unrelated status logic, permission gates, and sub-view layout — every edit risks collateral damage. Small, single-responsibility files are the cheapest win for AI-assisted maintainability.
+
+**Targets — triggers to evaluate, not hard limits:**
+
+| File kind | Comfortable | Evaluate decomposition | Treat as a defect |
+|---|---|---|---|
+| SwiftUI view / sheet | ≤ 200 lines | ~300 lines | > 400 lines |
+| Service / model / manager | ≤ 300 lines | ~400 lines | > 500 lines |
+
+Line count is a signal to **look**, not a mandate to **cut**. A 280-line view with one cohesive responsibility can stay; a 180-line view doing three unrelated jobs should split. **Cohesion decides the cut — line count only triggers the review.** Never scatter one logical unit across files just to hit a number; that is as harmful as a god-file.
+
+Two techniques, both Apple-blessed, neither introduces a ViewModel or any new architectural layer:
+
+### 1. `extension` across files — for type *members* (methods, actions, helpers)
+
+When a view's *logic* is the bloat — action handlers, status transitions, permission gates — split those members into `extension` files grouped by responsibility. Same type, no new type.
+
+```
+Features/Schedule/Sheets/
+  JobDetailSheet.swift               ← struct + body composition only
+  JobDetailSheet+StatusActions.swift ← advanceStatus / doAdvanceStatus
+  JobDetailSheet+MileageGate.swift   ← permission check + @State + sheet triggers
+```
+
+```swift
+// JobDetailSheet+StatusActions.swift
+extension JobDetailSheet {
+    func advanceStatus(to status: JobStatus) { ... }
+    func doAdvanceStatus(to status: JobStatus) { ... }
+}
+```
+
+Naming: `TypeName+Role.swift`, where `Role` names the one responsibility (`+StatusActions`, `+MileageGate`, `+Subviews`).
+
+### 2. Named sub-view structs — for *layout* (cohesive sections of `body`)
+
+When a cohesive section of `body` is the bloat, extract it to its own `private struct` (own file when reused or complex). Zero overhead — SwiftUI already diffs sub-views efficiently.
+
+```
+JobDetailJobHeader.swift   ← customer name, date, notes (sub-view struct)
+JobStatusButtons.swift     ← En Route / In Progress / Complete buttons
+```
+
+Sub-views receive **only what they display** via `let` or `@Binding`, and report actions **up** via closures:
+
+```swift
+private struct JobStatusButtons: View {
+    let status: JobStatus
+    let onAdvance: (JobStatus) -> Void   // callback up — not a service down
+    var body: some View { ... }
+}
+```
+
+### The hard boundary: sub-view vs ViewModel
+
+A sub-view struct holds **only display data and binding refs** — never service calls, Core Data contexts, or `@FetchRequest`. The moment a sub-view fetches or computes from raw data, it has become a ViewModel, which this project does not use. Keep data access in the parent view; pass results down as plain values, pass actions up as closures. (See anti-patterns.md.)
+
+---
+
 ## `List` vs `ScrollView` + Lazy Stack
 
 | Scenario | Use |

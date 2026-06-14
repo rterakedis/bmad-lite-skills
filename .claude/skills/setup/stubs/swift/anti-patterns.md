@@ -242,3 +242,31 @@ The view's job is to capture **intent** and dispatch. The mutation belongs in a 
 ```
 
 **Code-review rule:** any `context.delete` / `context.save` / multi-row fetch-and-mutate inside a view modifier is a rejection — extract to a `static`/`actor` service method and add a test. (See *Asserting deletion* in `testing.md` for how to test the extracted method.)
+
+---
+
+## 12. God Views & Data-Owning Sub-Views
+
+**Symptom:** A single view/sheet file that has grown past ~300–400 lines because it owns status logic, permission gates, multiple sheet states, *and* all sub-view layout. Or — the failure mode while splitting it up — a sub-view struct that takes a service, `context`, or `@FetchRequest` so it can fetch/compute its own data.
+
+**Why it's wrong:** An oversized view is hard for both humans and AI agents to edit safely — an agent changing one button must load and reason over everything else in the file, so every edit risks collateral damage. The *wrong* fix is to give an extracted sub-view its own data access; that quietly recreates a ViewModel (banned, see #1) and re-buries logic where tests can't reach it (see #11).
+
+The correct decomposition uses two no-new-layer techniques: split type **members** into `extension TypeName {}` files grouped by responsibility (`+StatusActions`, `+MileageGate`), and split cohesive **layout** sections into named `private struct` sub-views. Sub-views receive only display data via `let`/`@Binding` and report actions up via closures — never a service or context down.
+
+```swift
+// ❌ Banned — sub-view fetches its own data; this is a ViewModel in disguise
+private struct JobStatusButtons: View {
+    @FetchRequest var history: FetchedResults<StatusChange>   // wrong — data access in a sub-view
+    let context: NSManagedObjectContext                        // wrong — context passed down
+    var body: some View { ... }
+}
+
+// ✅ Parent owns data; sub-view gets values down, sends intent up
+private struct JobStatusButtons: View {
+    let status: JobStatus
+    let onAdvance: (JobStatus) -> Void
+    var body: some View { ... }
+}
+```
+
+**Code-review rule:** a view/sheet file over ~400 lines is a finding — decompose by responsibility (`extension` files + named sub-views), not by mechanical line-cutting. A sub-view struct that holds a service, `NSManagedObjectContext`, or `@FetchRequest` is a rejection. (See *File-Level Decomposition* in `ui-composition.md`.)
