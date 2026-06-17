@@ -45,6 +45,8 @@ This is a standalone skills library for [Claude Code](https://claude.ai/code). I
 - **Observability ledger** (`docs/metrics/flywheel-ledger.jsonl`): each `/dev-story` and `/code-review` pass appends a structured line (story, model, build result, evals pass rate, finding counts) — queryable with `jq` to track per-story quality and model cost over time
 - **Cumulative eval regression net** (`docs/evals/`): `/create-story` seeds `type: command` eval cases from ACs; `/dev-story` runs them (zero-token shell execution) and enables the case when the test lands; a failing eval on a later story is a regression and blocks close just like a red build
 - `/upgrade-project` — detection-based sync for existing projects: scans for missing hooks, stubs, evals/metrics dirs, and CLAUDE.md sections; classifies each item as ADD / REFRESH / CONFLICT / OK; previews before applying; never overwrites locally edited content; writes `.bmad-lite/manifest.json` for future runs
+- `/epic-flywheel` — autonomous epic orchestration layer above `/story-flywheel`: drives a whole epic from "not started" to "implemented, reviewed, verified together" with granular commit-per-step (create → commit → dev → commit → review+patch → commit), within-epic auto-advance on green stories, an Epic Boundary Gate (whole-project build+test, cumulative evals RUN across all epics, invariant + deferred sweeps — HALTs for help on any failure), deferred-item re-homing, a rolled-up LLM-deduplicated test plan split into simulator/local-runnable vs physical-device-required cases (physical items persist to `docs/testing/physical-device-backlog.md`), and a mandatory retrospective reminder at the boundary
+- **`scripts/commit-push.sh`** — zero-reasoning commit helper scaffolded by `/setup` and `/upgrade-project` into every project: stages, commits (with the Co-Authored-By trailer), and pushes to the current branch in one call; supports staged-tracked-only (default), specific files, or `--all`
 
 ---
 
@@ -58,9 +60,28 @@ BMad™ and BMad Method™ are trademarks of BMad Code, LLC. This project is not
 
 ## How to use
 
-These skills are designed to be **added to any Claude Code session as a workspace directory** — not copied into individual projects. Clone this repo once and reference it across all your projects.
+There are two ways to use these skills: **plugin install** (recommended for new setups) or **workspace directory** (the original approach, still fully supported).
 
-### 1 — Clone once
+### Option A — Plugin install (recommended)
+
+This repo ships as a Claude Code plugin. Install it once and the skills are available in every session automatically — no `/add-dir`, no settings.json hook needed.
+
+```
+/plugin marketplace add https://github.com/rterakedis/bmad-lite-skills
+/plugin install bmad-lite@bmad-lite
+```
+
+Skills and agents are registered at the plugin level and load on every session start. To pick up new versions after a `git pull`:
+
+```
+/plugin marketplace update
+```
+
+### Option B — Workspace directory (original approach)
+
+These skills can also be **added to any Claude Code session as a workspace directory** — clone once and reference across all your projects.
+
+#### 1 — Clone once
 
 ```bash
 git clone https://github.com/rterakedis/bmad-lite-skills ~/repos/bmad-lite-skills
@@ -68,7 +89,7 @@ git clone https://github.com/rterakedis/bmad-lite-skills ~/repos/bmad-lite-skill
 
 Put it wherever you keep shared tools. The path doesn't matter as long as it's consistent.
 
-### 2 — Add to your Claude Code session
+#### 2 — Add to your Claude Code session
 
 At the start of any session, run:
 
@@ -78,7 +99,7 @@ At the start of any session, run:
 
 Claude can now read all skill files from that directory alongside your project.
 
-### 3 — Wire up auto-loading (recommended)
+#### 3 — Wire up auto-loading (recommended)
 
 To avoid running `/add-dir` manually every session, add it as a startup hook in your project's `.claude/settings.json`:
 
@@ -124,6 +145,7 @@ Once the directory is added, invoke skills by name:
 | `/github-tracking setup` | One-time GitHub auth + create status labels |
 | `/github-tracking backfill` | Retroactively create GitHub issues for existing stories |
 | `/story-flywheel` | Automated create → dev → review loop using isolated subagents; each phase runs in its own context with automatic model routing (Opus for Swift dev, Sonnet elsewhere) |
+| `/epic-flywheel` | Autonomous epic orchestration — drives a whole epic end-to-end with granular commits per step, auto-advance on green, an Epic Boundary Gate (build+test+evals+deferred sweeps), and a rolled-up test plan split by simulator vs physical-device requirements |
 | `/evals` | Build, run, and score the cumulative eval regression net for a story's epic — zero-token shell execution of accumulated `type: command` cases |
 | `/upgrade-project` | Sync an existing project to the latest hooks, stubs, evals/metrics dirs, and CLAUDE.md sections — previews plan before applying, never clobbers local edits |
 | `/discover` | Brownfield: reverse-engineer a codebase into docs |
@@ -413,6 +435,8 @@ Context accumulates silently. If you run `/prd` → `/architecture` → `/epics`
 your-project/
 ├── AGENTS.md              ← AI conventions for all tools (Copilot, Cursor, Claude)
 ├── CLAUDE.md              ← Claude-specific rules and project conventions
+├── scripts/
+│   └── commit-push.sh     ← one-call commit helper (stage → commit → push); scaffolded by /setup
 ├── .bmad-lite/
 │   └── manifest.json      ← scaffold record (skills_path, surfaces, asset flags); written by /setup and /upgrade-project
 ├── .claude/
@@ -567,6 +591,8 @@ All GitHub operations are skipped silently if `gh auth` is not configured — th
 |------------|-------------|
 | `/story-flywheel` | Fully automated create → dev → review loop. Spawns isolated subagents (`bmad-story-creator` → `bmad-story-developer` → `bmad-story-reviewer`) so each phase's heavy reads stay in a throwaway context, keeping the main thread lean. On Swift projects, emits **MODEL SWITCH GATE** hard-stops before each phase with a per-story model plan (Sonnet for create, Opus for dev, Sonnet for review); user types "ready" after switching in the UI. On non-Swift projects, runs fully automated with no gates. Pauses for human decisions surfaced by the Clarification Gate in Phase 1. |
 | `/story-flywheel {epic}-{story}` | Run the flywheel on a specific story, e.g. `/story-flywheel 2-3` |
+| `/epic-flywheel` | Autonomous, epic-scoped orchestration layer above `/story-flywheel`. Drives a whole epic from "not started" to "implemented + reviewed + verified" with: granular commit-per-step (create → commit → dev → commit → review+patch → commit, using `scripts/commit-push.sh` when present); within-epic auto-advance on fully-green stories; an **Epic Boundary Gate** (whole-project build+test, cumulative `evals` RUN across all epics, invariant sweep, two-pass deferred sweep — any failure HALTs); deferred-item re-homing at the boundary; a rolled-up LLM-deduplicated test plan written to `docs/epics/epic-{N}-test-plan.md` with every test classified as simulator/local-runnable vs physical-device-required; physical-device items persist to `docs/testing/physical-device-backlog.md`; boundary report always surfaces a mandatory retrospective reminder (skipping requires explicit confirmation). |
+| `/epic-flywheel {N}` | Run the flywheel on a specific epic number, e.g. `/epic-flywheel 2` |
 | `/evals build` | Append (or flip `enabled: true` on) `type: command` eval cases derived from a story's ACs and Behavior Contract invariants — run by `/create-story` and `/dev-story` automatically |
 | `/evals run` | Execute all enabled eval cases for a story's epic — zero-token shell execution; failing case = regression, blocks story close |
 | `/evals score` | Score the last run and emit a pass/fail rubric line — integrated into `/code-review`'s final gate |
@@ -694,6 +720,8 @@ BMAD-LITE uses roughly **half the tokens** of original BMAD for the same 12-stor
 | Observability ledger (`docs/metrics/flywheel-ledger.jsonl`) | Per-story quality and cost data queryable with `jq` — tracks build results, eval pass rates, and finding counts across the project lifetime |
 | Cumulative eval regression net (`docs/evals/`) | AC-derived eval cases accumulate across stories; a failing eval on a later story surfaces a regression before review, exactly like a red build |
 | `/upgrade-project` | Keeps existing projects in sync with new skills/hooks/stubs without manual file hunting or overwriting local edits |
+| `/epic-flywheel` | Drives a whole epic end-to-end semi-autonomously — granular commits per story phase, within-epic auto-advance on green, Epic Boundary Gate, deferred re-homing, and a physical-device-backlog that persists across epics |
+| `scripts/commit-push.sh` | Zero-reasoning commit helper scaffolded by `/setup` into every project — one call to stage, commit (with Co-Authored-By), and push; eliminates the multi-command git dance inside AI sessions |
 
 ---
 
