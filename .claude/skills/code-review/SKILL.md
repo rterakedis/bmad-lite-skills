@@ -138,6 +138,6 @@ One-off layout subviews don't qualify; only components future stories should reu
 
 **Ledger:** If `docs/metrics/` exists, append one `code-review` line to `docs/metrics/flywheel-ledger.jsonl` (single shell redirect — do not read the file into context): `{ts, story, phase:"code-review", model, build_test, evals:"P/T", findings:{patched,decisions,deferred}, rubric_gate}`.
 
-**Update status:**
-- All resolved: Status `done` → **CLOSE-ISSUE**
-- Unresolved patches: Status `in-progress` → **TRANSITION**
+**Update status** (in the YAML frontmatter — the source of truth; never as a `**Status:**` body line):
+- All resolved: `status: done` → **CLOSE-ISSUE**
+- Unresolved patches: `status: in-progress` → **TRANSITION**

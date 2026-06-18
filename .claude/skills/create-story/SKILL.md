@@ -137,7 +137,7 @@ Output: `docs/epics/{epic}-{story}-{slug}.md`
 Show story: what it implements, FRs satisfied, open questions. Request review.
 
 After feedback:
-1. Mark status `ready-for-dev`
+1. Set `status: ready-for-dev` in the **YAML frontmatter** (the machine-readable source of truth — never as a `**Status:**` body line)
 2. Update cache with learnings
 3. **Seed eval cases.** If `docs/evals/` exists, execute **BUILD** from `skills/evals/SKILL.md` for this story: derive `type: command` regression cases from the ACs and any Behavior Contract invariants (referencing the tests dev-story will write — `enabled: false` with a pending note until they land). This makes the story's intended behavior part of the cumulative regression net. Skip if `docs/evals/` is absent.
 

@@ -1,12 +1,14 @@
 ---
 epic: {epic}
 story: {story}
+title: {title}
+status: ready-for-dev
 github_issue: 0
 ---
 
 # Story {epic}.{story}: {title}
 
-**Status:** ready-for-dev
+> **Status, epic, story, and github_issue live in the YAML frontmatter above — they are the machine-readable source of truth** read by github-tracking, gh-track.sh, and the flywheels. Do not restate Status as a `**Status:**` body line (that creates a second, drifting copy). Update `status:` in the frontmatter as the story moves: `ready-for-dev → in-progress → review → done`.
 
 ## Story
 

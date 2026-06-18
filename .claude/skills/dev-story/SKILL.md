@@ -65,7 +65,7 @@ Modify only:
 - Completion Notes — key decisions
 - File List — files created/modified/deleted
 - Change Log — one-line per session
-- Status — to `review` when done
+- Status — set `status: review` in the **YAML frontmatter** when done (frontmatter is the source of truth; do not write a `**Status:**` body line)
 
 Don't modify: User Story statement, Dev Notes prose, References.
 
@@ -154,12 +154,12 @@ After patches and deferred-item resolution touch the code, **re-run the Build & 
 ### Wrap Up
 
 **All resolved (and Build & Test Gate green):**
-1. Status = `done`
+1. Set `status: done` in the YAML frontmatter
 2. **CLOSE-ISSUE** (skip if unavailable)
 3. **Ledger:** if `docs/metrics/` exists, append one `dev-story` line to `docs/metrics/flywheel-ledger.jsonl` (single shell redirect — do not read the file into context): `{ts, story, phase:"dev-story", model, build_test, bt_iterations, evals:"P/T", findings:{patched,decisions,deferred}, invariants:"V/T", duration_min}`.
 4. Report: "{epic}.{story} complete. {P} patches, {D} decisions, {W} deferred."
 
 **Unresolved patches remain:**
-1. Status = `in-progress`
+1. Set `status: in-progress` in the YAML frontmatter
 2. **TRANSITION** to `in-progress` (skip if unavailable)
 3. Report which items need attention

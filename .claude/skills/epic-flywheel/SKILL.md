@@ -42,15 +42,34 @@ description: Drive an entire epic to completion semi-autonomously — runs the p
 
 For each story in the epic, in story order. Spawn each phase as its subagent (cold start; it owns the heavy reading). The orchestrator captures only the structured report fields.
 
+### GitHub tracking is orchestrator-owned (do not delegate-and-hope)
+
+A cold subagent does **not** reliably run the issue transitions, and nothing verifies it did — that is how issues drift (stuck on `ready-for-dev`, a stale `backlog` left beside a new label, dev'd stories never closed). epic-flywheel already gates every commit, so it knows the exact moment each phase ends and **drives the transition itself** using the deterministic script:
+
+```
+backlog → ready-for-dev → in-progress → review → done (+ closed)
+```
+
+At each transition point in the steps below, run one line — it adds the target label, **strips every stale status label**, and self-verifies:
+
+```bash
+bash scripts/gh-track.sh transition {issue#} {label}    # ready-for-dev|in-progress|review
+bash scripts/gh-track.sh close {issue#} "Story {e}.{s} complete"   # final: done + close
+```
+
+Get `{issue#}` from the create-story report or `grep '^github_issue:' {story_file}`. If it's `0`/missing the issue was never created — run github-tracking **CREATE-ISSUE** first, don't silently skip. If the script is absent, fall back to the github-tracking TRANSITION/CLOSE-ISSUE ops. If `gh` is unavailable the script prints `skip: gh unavailable` and exits 0 — note that once in the boundary report rather than claiming issues were updated.
+
 ### Step 1 — Create Story → commit
 Spawn `bmad-story-creator` with `{epic}.{story}`. Capture `STORY FILE`, `COMPLEXITY`, `CLARIFICATIONS NEEDED`, `PREREQUISITES`, `DESIGN GAP`.
 - **Clarification Gate (the one mandatory human pause inside a story):** if the report lists *material* clarifications, surface them now and wait for answers; record them into the story file. One-default ambiguities are recorded as stated assumptions and do **not** pause.
 - **Cross-story prerequisite check:** if `PREREQUISITES` names a runtime artifact owned by a *later* story in this or another epic, flag a sequencing risk — this is the legitimate "not built yet" case and must be handled at story-design time, not discovered as a fake bug later.
+- **Track:** `gh-track.sh transition {issue#} ready-for-dev`.
 - **Commit:** `story {epic}.{story}: create` (stages the story file + any tracking/epics edits).
 
 ### Step 2 — Dev Story → commit
-Spawn `bmad-story-developer` (model `opus` only if `swift_project`) with the story file path. It runs the full dev-story workflow: implementation, **Build & Test Gate** (verify by running), **evals RUN** (if `docs/evals/`), invariant + design verification, and the inline review. Capture `STATUS`, `BUILD & TEST`, `BUILD/TEST ITERATIONS`, `EVALS`, `FINDINGS`, `INVARIANTS`, `UNRESOLVED`, `TESTING PLAN`.
+**Track first:** `gh-track.sh transition {issue#} in-progress` before spawning, so a long dev pass shows the right state. Then spawn `bmad-story-developer` (model `opus` only if `swift_project`) with the story file path. It runs the full dev-story workflow: implementation, **Build & Test Gate** (verify by running), **evals RUN** (if `docs/evals/`), invariant + design verification, and the inline review. Capture `STATUS`, `BUILD & TEST`, `BUILD/TEST ITERATIONS`, `EVALS`, `FINDINGS`, `INVARIANTS`, `UNRESOLVED`, `TESTING PLAN`.
 - **On HALT or red gate:** stop the loop. Report which story and why; do **not** commit a red story. Resume with `/epic-flywheel {N}` after the blocker is fixed.
+- **Track:** on green, `gh-track.sh transition {issue#} review`.
 - **Commit (only if gate green):** `story {epic}.{story}: dev`.
 - **Stash the TESTING PLAN** for the boundary roll-up (keep just the text — append it to a scratch list `docs/epics/.epic-{N}-test-plans.md`, one block per story, so the orchestrator never has to hold all plans in context at once).
 
@@ -59,6 +78,7 @@ Per story-flywheel's Phase 3 economy: the developer subagent already ran the inl
 - **Clean report (no `UNRESOLVED`, PASS gate, not security-sensitive):** skip a separate reviewer — carry Phase 2 findings forward. Saves a full review's tokens.
 - **Otherwise:** spawn `bmad-story-reviewer` for an independent adversarial pass. It emits the SCORE rubric line, auto-patches `patch` findings, logs `defer` via the `deferred` skill (re-homing each — slot as AC or remediation story), and **re-verifies green**. `decision-needed` findings surface to the user.
 - **Deferred re-homing check:** confirm every `[Defer]` from this story landed in `docs/deferred-items.md` with a `Scheduled As` target. An orphan is a loop bug — fix before advancing.
+- **Track:** on green, `gh-track.sh close {issue#} "Story {epic}.{story} complete"` (applies `done` + closes — milestone progress ticks up here).
 - **Commit (only if green after patches):** `story {epic}.{story}: review+patch`. If patches couldn't resolve, leave status `in-progress`, don't commit, HALT.
 
 ### Step 4 — Advance or checkpoint
@@ -89,6 +109,14 @@ Collect the `### Invariant Verification` blocks recorded by dev-story across thi
 Two-pass, mirroring `/retrospective`:
 - **Pass 1:** scan this epic's story files for `[Defer]` entries not present in `docs/deferred-items.md`; LOG-AND-SCHEDULE any orphan so it gets a home.
 - **Pass 2:** verify every logged deferred item has a non-empty `Scheduled As` pointing at open work. Report the count re-homed; nothing is left to rot.
+
+### 4b. Tracking reconcile (safety net)
+Even with orchestrator-owned transitions, reconcile the whole epic's issues against story frontmatter so nothing is left drifted:
+```bash
+bash scripts/gh-track.sh sync "<story-glob>"            # dry-run diff
+bash scripts/gh-track.sh sync "<story-glob>" --apply    # if the diff is non-empty
+```
+A clean diff (`0 to-change`) is the proof every issue landed in the right state. Report the count fixed in the boundary report. (If the project predates the script, call the github-tracking SYNC op instead.)
 
 ### 5. Rolled-up, deduplicated Test Plan (the manual pass)
 This is the payoff of deferring manual testing to here. Read the accumulated `docs/epics/.epic-{N}-test-plans.md` scratch list (collected plan text only — no source). Then, in a **single LLM pass**:

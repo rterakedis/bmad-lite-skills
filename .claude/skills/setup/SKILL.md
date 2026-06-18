@@ -116,9 +116,11 @@ Make the `.sh` files executable (`chmod +x .claude/hooks/*.sh`). These pair with
 
 > **Subagents need no scaffolding.** The flywheel's `bmad-story-creator` / `bmad-story-developer` / `bmad-story-reviewer` agents ship with the `bmad-lite` plugin and are available wherever it's installed. Nothing to copy per-project.
 
-### Step 3f — Scaffold commit workflow script
+### Step 3f — Scaffold project scripts
 
-Copy `{skills_path}/scripts/commit-push.sh` into the project's `scripts/commit-push.sh` (create `scripts/` if absent; skip if the file already exists). Make it executable (`chmod +x scripts/commit-push.sh`).
+Copy these from `{skills_path}/scripts/` into the project's `scripts/` (create `scripts/` if absent; skip any that already exist), then `chmod +x` them:
+- `commit-push.sh` — one-call stage/commit/push with the Co-Authored-By trailer.
+- `gh-track.sh` — deterministic GitHub issue status transitions (used by github-tracking + the flywheels; keeps label moves byte-identical and zero-token).
 
 Then append the git workflow instruction block to CLAUDE.md: check whether `## Git Workflow` already exists in CLAUDE.md. If it does, skip (never duplicate). Otherwise, append a `---` separator followed by the full contents of `{skills_path}/.claude/skills/setup/stubs/commit-workflow.md`.
 

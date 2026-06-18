@@ -54,6 +54,7 @@ Check these:
 | Swift guardrails block | `## Swift/SwiftUI Guardrails` in CLAUDE.md (only if `is_apple`) |
 | Web guardrails block | `## Web Guardrails` in CLAUDE.md (only if `is_web`) |
 | Commit script | `scripts/commit-push.sh` present + executable; `## Git Workflow` in CLAUDE.md |
+| Tracking script | `scripts/gh-track.sh` present + executable |
 | Docs structure | `## Docs Structure`, `## Task Tracking Emoji` in CLAUDE.md |
 
 **REFRESH vs CONFLICT for stubs** — the safe-overwrite test:
@@ -85,9 +86,12 @@ In dependency order, applying only ADD and REFRESH items:
    `startup` and any user hooks.
 4. **Stubs (REFRESH only):** copy current swift/web stubs over unedited project copies.
    Leave CONFLICTs untouched.
-5. **Commit script:** if `scripts/commit-push.sh` is missing, copy from
+5. **Scripts:** if `scripts/commit-push.sh` is missing, copy from
    `{skills_path}/scripts/commit-push.sh` and `chmod +x`. If `## Git Workflow` is
-   missing from CLAUDE.md, append `---` + `stubs/commit-workflow.md`.
+   missing from CLAUDE.md, append `---` + `stubs/commit-workflow.md`. Likewise copy
+   `{skills_path}/scripts/gh-track.sh` if `scripts/gh-track.sh` is missing and `chmod +x`.
+   These are unedited-overwrite-safe by the same git-provenance test as stubs (REFRESH
+   if the project copy matches a historical committed version; CONFLICT otherwise).
 6. **CLAUDE.md sections:** append any missing guardrail/structure blocks (same logic as
    `/setup` Steps 3/3a/3c) — check-heading-then-append, never modify existing prose.
 6. **Manifest:** write/update `.bmad-lite/manifest.json` with the current

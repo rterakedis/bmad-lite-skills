@@ -82,6 +82,8 @@ Added **edge-case enumeration + Behavior Contract + Clarification Gate** (fix fo
 
 Added **eval seeding**: After Writing, if `docs/evals/` exists, runs the `evals` BUILD op to derive `type: command` regression cases from the ACs/invariants (referencing tests dev-story will write), making the story's intended behavior part of the cumulative regression net.
 
+**Pinned story frontmatter format** (determinism fix): `template.md` now declares `status:` (and `title:`) as **YAML frontmatter** fields — the single machine-readable source of truth read by github-tracking / `gh-track.sh` / the flywheels — and explicitly forbids restating Status as a `**Status:**` body line. Root cause: the old template put `github_issue` in frontmatter but Status in the body, leaving the format underspecified, so create-story emitted *three* different shapes across one project (full-YAML, frontmatter-less `**bold**` headers, canonical) — and SYNC, which reads frontmatter `status:`, silently skipped the body-status variants. create-story / dev-story / code-review status-update steps now all write `status:` in frontmatter. `gh-track.sh` additionally tolerates the legacy `**Status:**`/`**GitHub Issue:** #N` body format on read (normalizing `✅ Done` → `done`) to recover pre-existing files without hand-editing.
+
 ### `deferred`
 - `d_id` is a required parameter in `LOG-AND-SCHEDULE` (upstream treats it as optional).
 - SCHEDULE return message includes `slotted into Story {epic}.{N}` phrasing; upstream uses slightly different wording.
@@ -108,6 +110,8 @@ Added **cross-epic runtime dependency scan** step after drafting all epics but b
 
 ### `github-tracking`
 Added **SYNC** operation: reconciles GitHub issue labels and open/closed state against `status:` frontmatter in every story file. Idempotent; prints a diff table before applying. Invocable as `/github-tracking sync`. Upstream only has `setup` and `backfill`.
+
+Also **decomposed the deterministic label mechanics into `scripts/gh-track.sh`** (project-scaffolded like `commit-push.sh`). TRANSITION/CLOSE-ISSUE/SYNC are now one-line shell calls (`gh-track.sh transition|close|sync`); the skill keeps only the *policy* (when to transition) and the interactive SETUP/BACKFILL/SYNC confirm gates. The script moves an issue between mutually-exclusive status labels and **strips every stale status label** in one deterministic step — fixing the in-model label drift (e.g. `backlog` left beside `ready-for-dev`) and saving the per-transition token cost of view→parse→edit→verify. `sync` is dry-run by default, `--apply` to execute; degrades to `skip: gh unavailable` (exit 0) so a flywheel is never blocked. Skills fall back to raw `gh` when the script is absent (older un-upgraded projects). Scaffolded by `/setup` Step 3f, refreshed by `/upgrade-project`, called by the flywheels (epic-flywheel drives transitions itself rather than trusting cold subagents).
 
 ### `retrospective`
 Expanded from five questions to **seven questions**, with two additions:
