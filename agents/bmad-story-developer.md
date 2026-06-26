@@ -46,4 +46,5 @@ message short; don't paste large build logs (cite the result + the key failing l
 - `EVALS: pass <p>/<total> | n/a`
 - `FINDINGS: <patches> patched, <decisions> decisions, <deferred> deferred`
 - `INVARIANTS: <verified>/<total> | n/a`
+- `DOCS UPDATED: <comma-list of operational docs synced, e.g. setup/index.md, sql/migrations.md> | none`
 - `UNRESOLVED:` bulleted items needing human attention, or `none`

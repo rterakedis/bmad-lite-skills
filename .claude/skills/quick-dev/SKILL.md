@@ -56,6 +56,8 @@ Security pass (conditional): If intent/files touch auth/data-access/api/secrets/
 
 **CLAUDE.md:** Gotcha/footgun discovered? New project rule? Add it.
 
+**Operational guides:** execute **OPERATIONAL** from `skills/docs-sync/SKILL.md` with this change's changed-file list — keeps the human stand-up / run-it / database guides current if the change touched a dependency, env var, migration, script, or deploy/CI file; zero-cost otherwise.
+
 If no updates needed, confirm: "No doc updates required."
 
 ## Phase 5 — GitHub Tracking (optional)

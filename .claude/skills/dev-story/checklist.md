@@ -19,6 +19,7 @@ All items must pass before status is set to `review`.
 - [ ] Test framework and patterns from Dev Notes followed
 
 ## Story File
+- [ ] Infra-shaped changes (new dependency, env var, migration, script, deploy/CI, service) are reflected in the matching human operational doc (`docs/setup/index.md`/`resources.md`/`scripts.md`, `docs/maintainer/`, `docs/sql/`) when that doc exists — or N/A if the diff touched no infra signal
 - [ ] File List includes every file created, modified, or deleted
 - [ ] Completion Notes summarize key implementation decisions
 - [ ] Change Log updated with one-line summary

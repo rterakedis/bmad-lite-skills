@@ -67,7 +67,7 @@ Spawn `bmad-story-creator` with `{epic}.{story}`. Capture `STORY FILE`, `COMPLEX
 - **Commit:** `story {epic}.{story}: create` (stages the story file + any tracking/epics edits).
 
 ### Step 2 — Dev Story → commit
-**Track first:** `gh-track.sh transition {issue#} in-progress` before spawning, so a long dev pass shows the right state. Then spawn `bmad-story-developer` (model `opus` only if `swift_project`) with the story file path. It runs the full dev-story workflow: implementation, **Build & Test Gate** (verify by running), **evals RUN** (if `docs/evals/`), invariant + design verification, and the inline review. Capture `STATUS`, `BUILD & TEST`, `BUILD/TEST ITERATIONS`, `EVALS`, `FINDINGS`, `INVARIANTS`, `UNRESOLVED`, `TESTING PLAN`.
+**Track first:** `gh-track.sh transition {issue#} in-progress` before spawning, so a long dev pass shows the right state. Then spawn `bmad-story-developer` (model `opus` only if `swift_project`) with the story file path. It runs the full dev-story workflow: implementation, **Build & Test Gate** (verify by running), **evals RUN** (if `docs/evals/`), invariant + design verification, and the inline review. Capture `STATUS`, `BUILD & TEST`, `BUILD/TEST ITERATIONS`, `EVALS`, `FINDINGS`, `INVARIANTS`, `DOCS UPDATED`, `UNRESOLVED`, `TESTING PLAN`.
 - **On HALT or red gate:** stop the loop. Report which story and why; do **not** commit a red story. Resume with `/epic-flywheel {N}` after the blocker is fixed.
 - **Track:** on green, `gh-track.sh transition {issue#} review`.
 - **Commit (only if gate green):** `story {epic}.{story}: dev`.
@@ -118,6 +118,9 @@ bash scripts/gh-track.sh sync "<story-glob>" --apply    # if the diff is non-emp
 ```
 A clean diff (`0 to-change`) is the proof every issue landed in the right state. Report the count fixed in the boundary report. (If the project predates the script, call the github-tracking SYNC op instead.)
 
+### 4c. Architecture promotion (canonical-doc sync)
+Execute **PROMOTE** from `skills/docs-sync/SKILL.md` for Epic {N}. It harvests project-canonical learnings (schema realities, new/changed services & integrations, cross-cutting invariants, architectural decisions) from `docs/epics/epic-{N}-context.md` and appends the durable ones to `docs/architecture.md` (idempotent; also `docs/sql/` / `docs/maintainer/` when present) — so the next epic plans against live docs, not a stale architecture. Zero-token when the context file has nothing canonical (pure-refactor epics often don't); never touches `docs/setup/*` guidance. Report the count promoted in the boundary report.
+
 ### 5. Rolled-up, deduplicated Test Plan (the manual pass)
 This is the payoff of deferring manual testing to here. Read the accumulated `docs/epics/.epic-{N}-test-plans.md` scratch list (collected plan text only — no source). Then, in a **single LLM pass**:
 1. **Deduplicate & merge** overlapping steps across stories into end-to-end flows (e.g. five stories each touching the cart → one "complete a purchase" flow plus the per-story edge cases that aren't covered by the flow).
@@ -158,6 +161,7 @@ Build & Test (whole project): {green | HALTED}
 Evals (cumulative): {p}/{t} command pass
 Invariants: {v}/{t} verified
 Deferred re-homed this epic: {n} (0 orphans)
+Architecture learnings promoted: {n} → docs/architecture.md
 Test plan: docs/epics/epic-{N}-test-plan.md
   • Simulator/local tests: {a}  ← run these now
   • Physical-device tests: {b}  ← deferred to org-account pass

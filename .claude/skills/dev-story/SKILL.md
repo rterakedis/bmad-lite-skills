@@ -156,8 +156,9 @@ After patches and deferred-item resolution touch the code, **re-run the Build & 
 **All resolved (and Build & Test Gate green):**
 1. Set `status: done` in the YAML frontmatter
 2. **CLOSE-ISSUE** (skip if unavailable)
-3. **Ledger:** if `docs/metrics/` exists, append one `dev-story` line to `docs/metrics/flywheel-ledger.jsonl` (single shell redirect — do not read the file into context): `{ts, story, phase:"dev-story", model, build_test, bt_iterations, evals:"P/T", findings:{patched,decisions,deferred}, invariants:"V/T", duration_min}`.
-4. Report: "{epic}.{story} complete. {P} patches, {D} decisions, {W} deferred."
+3. **Operational doc sync:** execute **OPERATIONAL** from `skills/docs-sync/SKILL.md` with this story's final changed-file list (after patches). It keeps the human stand-up / run-it / database guides current when an infra-shaped file changed, and is zero-cost otherwise. Record its `DOCS UPDATED` return in the Debug Log for the ledger and report.
+4. **Ledger:** if `docs/metrics/` exists, append one `dev-story` line to `docs/metrics/flywheel-ledger.jsonl` (single shell redirect — do not read the file into context): `{ts, story, phase:"dev-story", model, build_test, bt_iterations, evals:"P/T", findings:{patched,decisions,deferred}, invariants:"V/T", docs_updated:[…], duration_min}`.
+5. Report: "{epic}.{story} complete. {P} patches, {D} decisions, {W} deferred.{ Docs: {list} if any}"
 
 **Unresolved patches remain:**
 1. Set `status: in-progress` in the YAML frontmatter

@@ -122,7 +122,9 @@ A dimension is FAIL if any unresolved `[ ]` finding maps to it; GATE is PASS onl
 - Patterns established or broken during patches
 - Any "we learned X the hard way" that isn't obvious from the code
 
-If a story file was loaded, identify its epic (e.g., `epic-2` from `epic-2-story-3.md`). Check whether `docs/epics/epic-<n>-context.md` exists. If discoveries exist, append them under a `## Story {id} Learnings` heading. If no discoveries worth capturing, skip silently.
+If a story file was loaded, identify its epic (e.g., `epic-2` from `epic-2-story-3.md`). Check whether `docs/epics/epic-<n>-context.md` exists. If discoveries exist, append them under a `## Story {id} Learnings` heading. If no discoveries worth capturing, skip silently. (These project-canonical learnings are promoted into `docs/architecture.md` at the epic boundary by `/epic-flywheel`.)
+
+**Flag guidance drift:** If, while using `docs/setup/swift/` or `docs/setup/web/` as rejection criteria (Step 2), you found that the *guidance itself* is wrong, stale, or contradicted by what the codebase consistently and intentionally does (not a one-off bug — that's a finding), execute **DRIFT** from `skills/docs-sync/SKILL.md` with the contradiction. It emits a `/refresh-swift|web` advisory and never mutates `docs/setup/*` (external-sourced canon). Skip silently if the guidance held.
 
 **Update component inventory:** If the diff introduced a new reusable UI component (a view/element designed to be used in more than one place), append a row to `docs/ux/components-built.md` — create the file with this header if missing:
 
