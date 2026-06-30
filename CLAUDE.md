@@ -1,10 +1,10 @@
 # CLAUDE.md — bmad-lite-skills
 
-This repo is a customized fork of [BMAD-LITE](https://github.com/bmad-method/BMAD-LITE). It ships as a Claude Code plugin (`bmad-lite`) via `.claude-plugin/plugin.json`. Skills live in `.claude/skills/` and are registered as `SKILL.md` (uppercase) — the upstream uses `skill.md` (lowercase).
+This repo is a lean, token-efficient port and simplification of the [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD) for Claude Code. It ships as a Claude Code plugin (`bmad-lite`) via `.claude-plugin/plugin.json`. Skills live in `.claude/skills/` and are registered as `SKILL.md` (uppercase) — the upstream uses `skill.md` (lowercase) and an entirely different file structure (activation ceremony, TOML customization tiers, JIT step files) that this repo deliberately does not carry over.
 
 ## Purpose
 
-Maintain a curated, customized set of BMAD-LITE skills for use in Claude Code projects. The goal is to selectively pull upstream improvements from BMAD-LITE while preserving intentional local enhancements.
+Maintain a curated, token-conscious set of BMAD skills for use in Claude Code projects. The goal is to periodically check the upstream BMAD Method for new capabilities or fixes worth porting — as *ideas*, never as direct file copies — while preserving the structural simplifications and local enhancements documented below. See [guide/comparison.md](guide/comparison.md) for the full cut/added rationale.
 
 ---
 
@@ -29,23 +29,32 @@ The script stages, commits (with the Co-Authored-By trailer), and pushes to the 
 
 ## Upstream Sync Workflow
 
-Upstream repo is at `/Users/rterakedis/Git-Repos/BMAD-LITE/` (local clone).
-
-To evaluate and pull upstream changes for a skill:
+There is no maintained fork of upstream — clone the original framework directly when you want to check for new capabilities:
 
 ```bash
-# See what changed upstream for a specific skill
-diff .claude/skills/<name>/SKILL.md ../BMAD-LITE/skills/<name>/skill.md
-
-# See all skills with upstream divergence
-for skill in .claude/skills/*/; do
-  name=$(basename "$skill")
-  result=$(diff "$skill/SKILL.md" "../BMAD-LITE/skills/$name/skill.md" 2>/dev/null)
-  [ -n "$result" ] && echo "DIFFERS: $name"
-done
+git clone https://github.com/bmad-code-org/BMAD-METHOD /tmp/BMAD-METHOD
 ```
 
-When pulling upstream changes, copy content into `SKILL.md` (preserving uppercase filename). Do not blindly overwrite — check against the local customizations documented below.
+Upstream's skill files don't structurally match this repo's (different filenames, activation ceremony, TOML customization tiers, JIT step-file loading), so a mechanical `diff` isn't useful here. Instead, hand the comparison to an AI assistant with a prompt that leads with this repo's token-minimization philosophy, so it filters for genuine capability gains rather than re-importing ceremony this repo intentionally cut. Example prompt:
+
+```
+I maintain bmad-lite-skills, a token-efficient port of the BMAD Method for Claude Code.
+It deliberately strips: the per-invocation activation ceremony, three-tier TOML
+customization, agent persona overhead, and JIT step-file loading — replacing them with
+plain-English rules in CLAUDE.md and single-pass inline skill files. Full rationale in
+guide/comparison.md and guide/features.md in this repo.
+
+Compare /tmp/BMAD-METHOD (upstream) against .claude/skills/ in this repo. For each
+upstream skill, tell me:
+1. Any genuinely new capability or bugfix not present here
+2. Whether porting it would require re-adding ceremony/ infrastructure this repo cut
+   (if so, propose a lean equivalent instead of importing it wholesale)
+3. Which local skill file(s) would need to change, and a one-paragraph plan — not a
+   direct file copy
+Skip anything that's purely structural/ceremonial with no functional difference.
+```
+
+Treat the output as a worklist, not a patch — port the *idea* into the equivalent `SKILL.md`, checking it against the local customizations documented below first.
 
 ---
 
