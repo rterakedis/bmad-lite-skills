@@ -1,0 +1,70 @@
+name: Bug report
+description: Something in a skill, agent, or stub isn't behaving as documented.
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: skill
+    attributes:
+      label: Which skill or agent?
+      description: Pick the one this bug is in, or "Other" if it spans multiple / isn't skill-specific.
+      options:
+        - architecture
+        - check-readiness
+        - code-review
+        - correct-course
+        - create-story
+        - deferred
+        - design-verify
+        - dev-story
+        - discover
+        - docs-sync
+        - epic-flywheel
+        - epics
+        - evals
+        - github-tracking
+        - investigate
+        - prd
+        - quick-dev
+        - refresh-swift
+        - refresh-web
+        - retrospective
+        - security-review
+        - setup
+        - status
+        - story-flywheel
+        - swift-audit
+        - upgrade-project
+        - ux
+        - web-audit
+        - agent (bmad-story-creator / -developer / -reviewer / -docs-sync)
+        - Other / not skill-specific
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did the skill/agent describe doing, or what did you expect based on its SKILL.md?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Paste relevant output if you can.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The slash command(s) you ran and any relevant project state (e.g. "fresh /setup", "mid-epic", "Swift project").
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: How are you consuming this plugin?
+      placeholder: "e.g. marketplace install pinned to commit abc123, or symlinked clone"
+    validations:
+      required: false

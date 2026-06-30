@@ -1,0 +1,36 @@
+name: Feature request / skill idea
+description: Propose a new skill, agent, or an enhancement to an existing one.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What's missing or awkward in the current bmad-lite workflow?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: New skill, change to an existing skill, new stub, new hook, etc. Be as concrete as you can.
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Does this touch a skill with documented local customizations?
+      description: Check the "Local Customizations by Skill" section in CLAUDE.md. If yes, your proposal should account for that existing divergence from upstream BMAD-LITE.
+      options:
+        - "Yes"
+        - "No"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other way to solve this you considered and ruled out?
+    validations:
+      required: false
