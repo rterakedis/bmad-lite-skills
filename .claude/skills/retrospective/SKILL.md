@@ -28,6 +28,10 @@ Ask one at a time, confirm after each answer.
 6. **What should change?** → Process changes for next sprint (story creation, architecture, Dev Notes, testing).
 7. **What goes into CLAUDE.md?** → Standing rules for all future sessions.
 
+## Harvest Test Findings (before the deferred sweep)
+
+If `docs/epics/epic-{epic_num}-test-plan.md` exists and the manual test pass has run, invoke `/harvest-findings {epic_num}` (`skills/harvest-findings/SKILL.md`) first — it captures the tester's inline findings into `docs/epics.md`, opens a remediation story `{N}.{last+1}` for the in-scope ones, routes the rest through `deferred`, and resets the plan. Running it here means the deferred sweep below sees those findings already logged. Skip silently if there's no test plan or no findings to harvest.
+
 ## Deferred Item Status Check
 
 ### Pass 1 — Catch unlogged deferred items

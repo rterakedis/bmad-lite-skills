@@ -42,10 +42,12 @@ flowchart TD
         I -->|"More stories\nto do?"| G
     end
 
-    I -->|"Epic done?\nCheck /status"| J
+    I -->|"Epic done?\nCheck /status"| MT
 
     subgraph RETRO ["End of Epic"]
-        J["/retrospective\nWhat worked? What didn't?\nUpdates CLAUDE.md with new conventions"]
+        MT["🧪 Manual test pass\nWork through the epic test plan\nRecord findings inline"]
+        MT --> HF["/harvest-findings {N}\nCapture findings to backlog\nIn-scope → remediation story {N}.{last+1}\nDefer the rest · reset the plan"]
+        HF --> J["/retrospective\nWhat worked? What didn't?\nUpdates CLAUDE.md with new conventions"]
     end
 
     J -->|"Start next epic"| G

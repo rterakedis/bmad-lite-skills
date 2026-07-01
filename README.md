@@ -67,7 +67,9 @@ BMad™ and BMad Method™ are trademarks of BMad Code, LLC. This project is not
 6. **Wrap the epic:**
 
    ```
-   /retrospective  → capture what worked / what didn't, update CLAUDE.md
+   /harvest-findings {N} → after the manual test pass, capture inline findings,
+                           spin in-scope ones into a remediation story, reset the plan
+   /retrospective        → capture what worked / what didn't, update CLAUDE.md
    ```
 
 Already have an existing codebase instead of starting fresh? Run `/discover` first to reverse-engineer it into `docs/prd.md` + `docs/architecture.md`, then continue from step 3. See **[guide/workflows.md](guide/workflows.md)** for the full greenfield/brownfield flowcharts, and **[guide/skills-reference.md](guide/skills-reference.md)** for every skill and sub-command.

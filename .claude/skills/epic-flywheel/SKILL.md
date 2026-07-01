@@ -135,6 +135,7 @@ Write the result to `docs/epics/epic-{N}-test-plan.md`:
 ```markdown
 # Epic {N} — {title}: Test Plan
 _Rolled up and deduplicated from {X} story plans on {date}._
+_Record findings as an indented bullet under the relevant step, then run `/harvest-findings {N}` to capture and schedule them._
 
 ## A. Simulator / local-runnable (do now)
 ### Flow: {name}
@@ -169,13 +170,17 @@ Test plan: docs/epics/epic-{N}-test-plan.md
 Commits this epic: {count} (granular: create/dev/review per story)
 ─────────────────────────────────────────────
 RECOMMENDED FLOW:
-  1. Work through the simulator/local test plan above.
-  2. → Then run /retrospective for Epic {N} to capture learnings
+  1. Work through the simulator/local test plan above, recording findings inline
+     under each scenario in docs/epics/epic-{N}-test-plan.md.
+  2. → Run /harvest-findings {N} to capture those findings, schedule the in-scope
+       ones as story {N}.{last+1}, and reset the plan for re-test.
+  3. → Then run /retrospective for Epic {N} to capture learnings
        and update conventions BEFORE starting Epic {N+1}.
 
 Next:
   • "test"      — walk me through the simulator test plan now
-  • "retro"     — run the retrospective for Epic {N} (do this after testing)
+  • "harvest"   — run /harvest-findings {N} (do this after testing, before retro)
+  • "retro"     — run the retrospective for Epic {N} (do this after harvesting)
   • "continue"  — skip retro and start epic-flywheel on Epic {N+1}
   • "stop"      — end here
 ─────────────────────────────────────────────
