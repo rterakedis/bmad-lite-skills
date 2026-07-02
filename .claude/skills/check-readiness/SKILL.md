@@ -109,10 +109,23 @@ Run only if `docs/ux/DESIGN.md` or `docs/ux/EXPERIENCE.md` exists. If the produc
 
 ---
 
+## Check 10 — Pre-Mortem
+
+Assume it is three months after these epics shipped and the project has failed — late, broken, or unused. Working backwards from that assumed failure, enumerate 5–8 plausible causes grounded in *this* PRD/architecture/epics, not generic risk-register items: the specific third-party integration nobody has exercised yet, the epic whose stories all depend on one external API, the data-model guess in a specific architecture section, the performance or scale claim with no story behind it, the single manual process the launch depends on.
+
+Classify each cause:
+- **Addressed** — cite the story, AC, or architecture section that mitigates it.
+- **Unaddressed + material** — **blocker**: call **LOG-AND-SCHEDULE** for a mitigation story, or record an explicit user-confirmed "accepted risk" note in the PRD.
+- **Unaddressed + speculative** — warning: record it, don't block.
+
+This is plan-level red-teaming: `/forge-idea` pressure-tests the *idea*; this check pressure-tests the *plan*. It needs no extra reading — the three docs are already in context from Activation.
+
+---
+
 ## Output
 
-Readiness report: nine checks, blockers (fix before `/create-story`), warnings (fix before epic).
+Readiness report: ten checks, blockers (fix before `/create-story`), warnings (fix before epic).
 
-Blockers: uncovered FRs, circular deps, architecture contradictions, cross-epic runtime blockers, UI stories without design coverage, empty load-bearing tokens. Call **LOG-AND-SCHEDULE** for remediation stories.
-Warnings: weak ACs, scope overlap, missing security ACs, cross-epic runtime warnings, draft-status design specs, missing state coverage. Surface to user.
+Blockers: uncovered FRs, circular deps, architecture contradictions, cross-epic runtime blockers, UI stories without design coverage, empty load-bearing tokens, unaddressed material pre-mortem causes. Call **LOG-AND-SCHEDULE** for remediation stories.
+Warnings: weak ACs, scope overlap, missing security ACs, cross-epic runtime warnings, draft-status design specs, missing state coverage, speculative pre-mortem causes. Surface to user.
 Testing targets written to `CLAUDE.md` Conventions section as part of this check.

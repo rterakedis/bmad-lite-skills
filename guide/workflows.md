@@ -30,7 +30,9 @@ flowchart TD
         D --> DU["/ux\nWrite UX design specs\nDESIGN.md + EXPERIENCE.md\n(optional — skip for pure backend)"]
         DU --> E["/architecture\nWrite the Architecture Doc\nWhat tech stack, patterns, and structure?"]
         E --> F["/epics\nBreak the PRD into Epics and Stories\nCreates GitHub milestones automatically"]
-        F --> FR["/check-readiness\nValidate FR coverage, AC quality\nand architecture alignment"]
+        F -.->|"optional editorial pass"| DR["/doc-review\nTighten PRD / architecture as writing\nCuts recurring re-read cost"]
+        DR -.-> FR
+        F --> FR["/check-readiness\nValidate FR coverage, AC quality,\narchitecture alignment + pre-mortem"]
     end
 
     FR --> G
@@ -46,6 +48,7 @@ flowchart TD
 
     subgraph RETRO ["End of Epic"]
         MT["🧪 Manual test pass\nWork through the epic test plan\nRecord findings inline"]
+        MT -.->|"optional: automate the plan"| AT["/e2e-tests\nConvert local-runnable scenarios\ninto automated tests + eval cases\nManual pass shrinks permanently"]
         MT --> HF["/harvest-findings {N}\nCapture findings to backlog\nIn-scope → remediation story {N}.{last+1}\nDefer the rest · reset the plan"]
         HF --> J["/retrospective\nWhat worked? What didn't?\nUpdates CLAUDE.md with new conventions"]
     end
@@ -86,8 +89,9 @@ flowchart TD
 
     subgraph PLAN ["Planning Phase — decide what to build next"]
         E["/ux\nWrite UX design specs\nDESIGN.md + EXPERIENCE.md\n(optional — skip for pure backend)"]
+        E -.->|"optional: safety net first"| BT["/e2e-tests\nBackfill automated tests over\nexisting features before changing them\nRegisters zero-token eval cases"]
         E --> EA["/epics\nBreak new work into Epics and Stories\nBuilds on top of the discovered docs\nCreates GitHub milestones"]
-        EA --> ER["/check-readiness\nValidate FR coverage, AC quality\nand architecture alignment"]
+        EA --> ER["/check-readiness\nValidate FR coverage, AC quality,\narchitecture alignment + pre-mortem"]
     end
 
     ER --> F

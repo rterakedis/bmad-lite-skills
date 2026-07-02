@@ -35,7 +35,8 @@
 **Planning Gate**
 | Invocation | What it does |
 |------------|-------------|
-| `/check-readiness` | Validate PRD + architecture + epics are aligned — checks FR coverage, AC testability, story independence, architecture consistency, MVP scope drift, security coverage, cross-epic runtime dependencies, testing targets derived from architecture, and UX alignment (UI stories must map to EXPERIENCE.md surfaces; design tokens ready before implementation) |
+| `/doc-review` | Editorial review of a doc **as writing** (planning docs are re-read by the model every downstream session, so bloat is a recurring token cost). Three passes: **Structure** (purpose fit, CUT/MERGE/MOVE/CONDENSE recommendations with word estimates), **Prose** (minimal clarity fixes, three-column table), **Adversarial** (missing sections, unsupported claims, ambiguities a dev session would trip on, contradictions with sibling planning docs). Reader-type aware (`llm` for prd/architecture/epics/CLAUDE.md, `humans` for guides). Content is sacrosanct — applies accepted structure/prose edits only; substance gaps route to `/prd update` or `/correct-course`. Run after `/prd` or `/architecture`, before `/check-readiness`. |
+| `/check-readiness` | Validate PRD + architecture + epics are aligned — checks FR coverage, AC testability, story independence, architecture consistency, MVP scope drift, security coverage, cross-epic runtime dependencies, testing targets derived from architecture, UX alignment (UI stories must map to EXPERIENCE.md surfaces; design tokens ready before implementation), and a **pre-mortem** (assume the shipped project failed at month three; work backwards to specific causes in *this* plan; unaddressed material causes are blockers that get mitigation stories scheduled) |
 
 **Dev Flywheel**
 | Invocation | What it does |
@@ -47,6 +48,7 @@
 | `/evals build` | Append (or flip `enabled: true` on) `type: command` eval cases derived from a story's ACs and Behavior Contract invariants — run by `/create-story` and `/dev-story` automatically |
 | `/evals run` | Execute all enabled eval cases for a story's epic — zero-token shell execution; failing case = regression, blocks story close |
 | `/evals score` | Score the last run and emit a pass/fail rubric line — integrated into `/code-review`'s final gate |
+| `/e2e-tests` | Retro-fit automated API/E2E tests onto **already-built** features — brownfield code onboarded via `/discover`, features shipped before `docs/evals/` existed, or manual test-plan scenarios worth automating (each converted scenario is marked `[automated → EVAL {id}]` in the epic test plan, permanently shrinking the manual pass). Uses the project's existing framework (XCUITest / Playwright / pytest — confirms before adding any dependency), semantic locators only, runs everything to green, and registers each suite as zero-token `command` eval cases in `docs/evals/e2e-{area}.md` so the backfill joins the cumulative regression net. |
 | `/create-story` | Spec the next `ready-for-dev` story (auto-detected from `docs/epics.md`); performs a cross-epic runtime dependency check before writing. For UI stories, extracts a **Design Contract** from `docs/ux/` into Dev Notes (tokens, component specs, required states, reuse list from `components-built.md`) so dev sessions never re-read the UX specs |
 | `/create-story {epic}-{story}` | Spec a specific story, e.g. `/create-story 2-3` |
 | `/create-story refresh-cache` | Force-regenerate the epic context cache even if timestamps look fresh — use after editing `prd.md` or `architecture.md` mid-epic |

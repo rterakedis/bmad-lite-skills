@@ -24,6 +24,7 @@ behavior is genuinely non-deterministic and no command can assert it.
 docs/evals/
   README.md         ← format reference (scaffolded by /setup)
   epic-{n}.md       ← accumulated cases for epic n, one block per case
+  e2e-{area}.md     ← retro-fit cases registered by /e2e-tests (backfill net)
 ```
 
 Each case is a fenced block:
